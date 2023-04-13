@@ -1,0 +1,11 @@
+{
+  "name": "cypressmongodb",
+  "scripts": {
+    "cy:open": "npx cypress open --e2e"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "cypress": "^12.9.0",
+    "mongodb": "^5.2.0"
+  }
+}
