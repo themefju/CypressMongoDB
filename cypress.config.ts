@@ -1,10 +1,14 @@
 import { defineConfig } from 'cypress';
+import { findOne, find } from './utils/plugins/mongo/find';
 
 export default defineConfig({
   e2e: {
     supportFile: false,
     setupNodeEvents(on, config) {
-      // implement node event listeners here
+      on('task', {
+        find,
+        findOne,
+      });
     },
   },
 });

@@ -4,11 +4,10 @@
     "cy:open": "npx cypress open --e2e"
   },
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "cypress": "^12.9.0",
     "dotenv": "^16.0.3",
-    "mongodb": "^5.2.0",
+    "mongodb": "^4.15.0",
     "typescript": "^5.0.4"
   },
   "devDependencies": {
