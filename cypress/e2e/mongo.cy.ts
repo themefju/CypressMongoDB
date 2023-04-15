@@ -1,5 +1,6 @@
 /// <reference types="cypress" />
 import { find, findOne } from './utils/mongo/find';
+import { insertMany, insertOne } from './utils/mongo/insert';
 
 it('works', () => {
   expect(true).to.be.true;
@@ -93,6 +94,37 @@ context('find', () => {
     }).then((result) => {
       expect(result).to.not.be.null;
       expect(result).to.have.lengthOf(2);
+    });
+  });
+});
+
+context('insertOne', () => {
+  it('inserts one document', () => {
+    insertOne({
+      document: { inserted: Cypress._.random(0, 100), hurra: true },
+      collection: 'api-tests',
+    }).then((result) => {
+      expect(result.acknowledged).to.be.true;
+    });
+  });
+
+  it('inserts many documents at once', () => {
+    insertMany({
+      documents: [
+        {
+          inserted: Cypress._.random(100, 1000),
+          hurra: true,
+          manyAtOnce: true,
+        },
+        {
+          inserted: Cypress._.random(100, 1000),
+          hurra: true,
+          manyAtOnce: true,
+        },
+      ],
+      collection: 'api-tests',
+    }).then((result) => {
+      expect(result.acknowledged).to.be.true;
     });
   });
 });

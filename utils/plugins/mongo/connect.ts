@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { UUID } from 'bson';
-import { ConnectOptions } from './models/options.js';
+import { ConnectOptions } from './models/options';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -9,7 +9,7 @@ export const defaultOptions: ConnectOptions = {
   dbName: process.env.MONGO_DB,
 };
 
-export function client(uri: string) {
+export function client(uri: string): MongoClient {
   return new MongoClient(uri, {
     pkFactory: { createPk: () => new UUID().toBinary() },
   });
