@@ -29,3 +29,27 @@ export async function findOne(args: QueryOptions) {
         });
     });
 }
+
+export async function find(args: QueryOptions) {
+  const options: Options = defaults(defaultOptions, args);
+  options.query = deserialize(Buffer.from(options.query as Buffer));
+
+  return await client(options.uri)
+    .connect()
+    .then(async (client) => {
+      return await client
+        .db(options.dbName)
+        .collection(options.collection)
+        .find(options.query)
+        .toArray()
+        .then((result) => {
+          return serialize(result);
+        })
+        .catch((err) => {
+          throw err;
+        })
+        .finally(() => {
+          client.close();
+        });
+    });
+}

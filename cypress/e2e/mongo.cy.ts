@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-import { findOne } from './utils/mongo/find';
+import { find, findOne } from './utils/mongo/find';
 
 it('works', () => {
   expect(true).to.be.true;
@@ -62,6 +62,37 @@ context('findOne', () => {
           expect(nestedResult.type).to.equal('nested UUID');
         }
       );
+    });
+  });
+});
+
+context('find', () => {
+  it('returns empty array', () => {
+    find({
+      query: { framework: '84302' },
+      collection: 'api-tests',
+    }).then((result) => {
+      expect(result).to.deep.equal([]);
+    });
+  });
+
+  it('works with _id = ObjectId', () => {
+    find({
+      query: { test: 'ObjectId' },
+      collection: 'api-tests',
+    }).then((result) => {
+      expect(result).to.not.be.null;
+      expect(result).to.have.lengthOf(2);
+    });
+  });
+
+  it('works with _id = UUID', () => {
+    find({
+      query: { test: 'UUID' },
+      collection: 'api-tests',
+    }).then((result) => {
+      expect(result).to.not.be.null;
+      expect(result).to.have.lengthOf(2);
     });
   });
 });

@@ -13,3 +13,11 @@ export function findOne(args: QueryOptions) {
     }
   });
 }
+
+export function find(args: QueryOptions) {
+  args.query = serialize(args.query);
+
+  return cy.task('find', args).then((result: any) => {
+    return Object.values(deserialize(Buffer.from(result as Buffer)));
+  });
+}
