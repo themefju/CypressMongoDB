@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { deleteMany, deleteOne } from './utils/mongo/delete';
 import { find, findOne } from './utils/mongo/find';
 import { insertMany, insertOne } from './utils/mongo/insert';
 
@@ -98,10 +99,10 @@ context('find', () => {
   });
 });
 
-context('insertOne', () => {
+context('insert', () => {
   it('inserts one document', () => {
     insertOne({
-      document: { inserted: Cypress._.random(0, 100), hurra: true },
+      document: { inserted: Cypress._.random(0, 100), hurra: false },
       collection: 'api-tests',
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
@@ -121,7 +122,56 @@ context('insertOne', () => {
           hurra: true,
           manyAtOnce: true,
         },
+        {
+          inserted: Cypress._.random(100, 1000),
+          hurra: true,
+          manyAtOnce: true,
+        },
+        {
+          inserted: Cypress._.random(100, 1000),
+          hurra: true,
+          manyAtOnce: true,
+        },
+        {
+          inserted: Cypress._.random(100, 1000),
+          hurra: true,
+          manyAtOnce: true,
+        },
       ],
+      collection: 'api-tests',
+    }).then((result) => {
+      expect(result.acknowledged).to.be.true;
+    });
+  });
+});
+
+context('delete', () => {
+  it('deletes one document', () => {
+    deleteOne({
+      filter: { hurra: false },
+      collection: 'api-tests',
+    }).then((result) => {
+      expect(result.acknowledged).to.be.true;
+    });
+  });
+
+  it('works with _id = UUID', () => {
+    findOne({
+      query: { hurra: true, manyAtOnce: true },
+      collection: 'api-tests',
+    }).then((result) => {
+      deleteOne({
+        filter: { _id: result['_id'] },
+        collection: 'api-tests',
+      }).then((nestedResult) => {
+        expect(nestedResult.acknowledged).to.be.true;
+      });
+    });
+  });
+
+  it('deletes many documents at once', () => {
+    deleteMany({
+      filter: { hurra: true },
       collection: 'api-tests',
     }).then((result) => {
       expect(result.acknowledged).to.be.true;

@@ -9,6 +9,7 @@ export interface QueryOptions {
   collection: string;
   document?: Document;
   documents?: any;
+  filter?: Document;
   pipeline?: any;
   query?: Document;
 }
