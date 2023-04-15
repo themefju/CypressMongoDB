@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { aggregate } from './utils/mongo/aggregate';
 import { deleteMany, deleteOne } from './utils/mongo/delete';
 import { find, findOne } from './utils/mongo/find';
 import { insertMany, insertOne } from './utils/mongo/insert';
@@ -172,6 +173,27 @@ context('update', () => {
   });
 });
 
+context('aggregate', () => {
+  it('aggregate one document', () => {
+    aggregate({
+      pipeline: [{ $match: { hurra: false } }, { $set: { aggregated: true } }],
+      collection: 'api-tests',
+    }).then((result) => {
+      expect(result).to.not.be.null;
+      expect(result).to.have.length(1);
+
+      const ID = result[0]['_id'] ?? '';
+
+      findOne({
+        query: { _id: ID },
+        collection: 'api-tests',
+      }).then((result) => {
+        expect(result).to.not.be.null;
+      });
+    });
+  });
+});
+
 context('delete', () => {
   it('deletes one document', () => {
     deleteOne({
@@ -198,7 +220,7 @@ context('delete', () => {
 
   it('deletes many documents at once', () => {
     deleteMany({
-      filter: { hurra: true },
+      filter: { hurra: { $in: [true, false] } },
       collection: 'api-tests',
     }).then((result) => {
       expect(result.acknowledged).to.be.true;

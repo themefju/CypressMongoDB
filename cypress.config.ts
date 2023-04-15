@@ -1,4 +1,5 @@
 import { defineConfig } from 'cypress';
+import { aggregate } from './utils/plugins/mongo/aggregate';
 import { deleteMany, deleteOne } from './utils/plugins/mongo/delete';
 import { findOne, find } from './utils/plugins/mongo/find';
 import { insertMany, insertOne } from './utils/plugins/mongo/insert';
@@ -9,6 +10,7 @@ export default defineConfig({
     supportFile: false,
     setupNodeEvents(on, config) {
       on('task', {
+        aggregate,
         deleteMany,
         deleteOne,
         find,
