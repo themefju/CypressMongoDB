@@ -1,3 +1,5 @@
+import { Document } from 'mongodb';
+
 export interface ConnectOptions {
   uri: string;
   dbName: string;
@@ -5,10 +7,10 @@ export interface ConnectOptions {
 
 export interface QueryOptions {
   collection: string;
-  document?: object;
-  documents?: Array<object>;
-  pipeline?: Array<object>;
-  query?: object;
+  document?: Document;
+  documents?: any;
+  pipeline?: any;
+  query?: Document;
 }
 
 export type Options = ConnectOptions & QueryOptions;
