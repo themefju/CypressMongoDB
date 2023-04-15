@@ -10,8 +10,10 @@ export interface QueryOptions {
   document?: Document;
   documents?: any;
   filter?: Document;
+  options?: object;
   pipeline?: any;
   query?: Document;
+  update?: object;
 }
 
 export type Options = ConnectOptions & QueryOptions;

@@ -2,6 +2,7 @@
 import { deleteMany, deleteOne } from './utils/mongo/delete';
 import { find, findOne } from './utils/mongo/find';
 import { insertMany, insertOne } from './utils/mongo/insert';
+import { updateMany, updateOne } from './utils/mongo/update';
 
 it('works', () => {
   expect(true).to.be.true;
@@ -141,6 +142,32 @@ context('insert', () => {
       collection: 'api-tests',
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
+    });
+  });
+});
+
+context('update', () => {
+  it('updates one document', () => {
+    updateOne({
+      filter: { hurra: false },
+      update: { $set: { updatedField: true } },
+      collection: 'api-tests',
+    }).then((result) => {
+      expect(result.acknowledged).to.be.true;
+      expect(result.matchedCount).to.equal(1);
+      expect(result.modifiedCount).to.equal(1);
+    });
+  });
+
+  it('updates many documents at once', () => {
+    updateMany({
+      filter: { hurra: true },
+      update: { $set: { updateManyFields: true } },
+      collection: 'api-tests',
+    }).then((result) => {
+      expect(result.acknowledged).to.be.true;
+      expect(result.matchedCount).to.equal(5);
+      expect(result.modifiedCount).to.equal(5);
     });
   });
 });
