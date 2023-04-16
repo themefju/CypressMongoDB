@@ -1,10 +1,10 @@
 import { deserialize, serialize } from 'bson';
 import { client, defaultOptions } from './connect';
-import { Options, QueryOptions } from './models/options';
+import { ConnectOptions, FindArgs } from './models/options';
 import { defaults } from '../../utils';
 
-export async function findOne(args: QueryOptions) {
-  const options: Options = defaults(defaultOptions, args);
+export async function findOne(args: FindArgs) {
+  const options: ConnectOptions & FindArgs = defaults(defaultOptions, args);
   options.query = deserialize(Buffer.from(options.query as Buffer));
 
   return await client(options.uri)
@@ -30,8 +30,8 @@ export async function findOne(args: QueryOptions) {
     });
 }
 
-export async function find(args: QueryOptions) {
-  const options: Options = defaults(defaultOptions, args);
+export async function find(args: FindArgs) {
+  const options: ConnectOptions & FindArgs = defaults(defaultOptions, args);
   options.query = deserialize(Buffer.from(options.query as Buffer));
 
   return await client(options.uri)

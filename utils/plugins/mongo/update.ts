@@ -1,10 +1,10 @@
 import { deserialize } from 'bson';
 import { client, defaultOptions } from './connect';
-import { Options, QueryOptions } from './models/options';
+import { ConnectOptions, UpdateArgs } from './models/options';
 import { defaults } from '../../utils';
 
-export async function updateOne(args: QueryOptions) {
-  const options: Options = defaults(defaultOptions, args);
+export async function updateOne(args: UpdateArgs) {
+  const options: ConnectOptions & UpdateArgs = defaults(defaultOptions, args);
   options.filter = deserialize(Buffer.from(options.filter as Buffer));
   options.update = deserialize(Buffer.from(options.update as Buffer));
 
@@ -27,8 +27,8 @@ export async function updateOne(args: QueryOptions) {
     });
 }
 
-export async function updateMany(args: QueryOptions) {
-  const options: Options = defaults(defaultOptions, args);
+export async function updateMany(args: UpdateArgs) {
+  const options: ConnectOptions & UpdateArgs = defaults(defaultOptions, args);
   options.filter = deserialize(Buffer.from(options.filter as Buffer));
   options.update = deserialize(Buffer.from(options.update as Buffer));
 

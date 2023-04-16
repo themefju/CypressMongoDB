@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 import { serialize } from 'bson';
-import { QueryOptions } from '../../../../utils/plugins/mongo/models/options';
+import { DeleteArgs } from '../../../../utils/plugins/mongo/models/options';
 
-export function deleteOne(args: QueryOptions) {
+export function deleteOne(args: DeleteArgs) {
   args.filter = serialize(args.filter);
 
   return cy.task('deleteOne', args).then((result: any) => {
@@ -10,7 +10,7 @@ export function deleteOne(args: QueryOptions) {
   });
 }
 
-export function deleteMany(args: QueryOptions) {
+export function deleteMany(args: DeleteArgs) {
   args.filter = serialize(args.filter);
 
   return cy.task('deleteMany', args).then((result: any) => {

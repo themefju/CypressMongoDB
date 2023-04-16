@@ -1,11 +1,14 @@
 import { Document } from 'mongodb';
 import { deserialize, serialize } from 'bson';
-import { Options } from './models/options';
+import { AggregateArgs, ConnectOptions } from './models/options';
 import { defaults } from '../../utils';
 import { client, defaultOptions } from './connect';
 
-export async function aggregate(args: any) {
-  const options: Options = defaults(defaultOptions, args);
+export async function aggregate(args: AggregateArgs) {
+  const options: ConnectOptions & AggregateArgs = defaults(
+    defaultOptions,
+    args
+  );
   options.pipeline = Object.values(
     deserialize(Buffer.from(options.pipeline as Buffer))
   );
@@ -16,7 +19,7 @@ export async function aggregate(args: any) {
       return await client
         .db(options.dbName)
         .collection(options.collection)
-        .aggregate(options.pipeline as Document[])
+        .aggregate(options.pipeline as Document[], options.options)
         .toArray()
         .then((result) => {
           return serialize(result);

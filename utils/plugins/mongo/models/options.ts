@@ -5,15 +5,35 @@ export interface ConnectOptions {
   dbName: string;
 }
 
-export interface QueryOptions {
+export interface AggregateArgs {
   collection: string;
-  document?: Document;
-  documents?: any;
-  filter?: Document;
-  options?: object;
-  pipeline?: any;
-  query?: Document;
-  update?: object;
+  pipeline: Document[] | Buffer;
+  options?: Document;
 }
 
-export type Options = ConnectOptions & QueryOptions;
+export interface DeleteArgs {
+  collection: string;
+  filter: Document;
+}
+
+export interface FindArgs {
+  collection: string;
+  query: Document;
+}
+
+export interface InsertArgs {
+  collection: string;
+  document: Document;
+}
+
+export interface InsertManyArgs {
+  collection: string;
+  documents: Document[] | Buffer;
+}
+
+export interface UpdateArgs {
+  collection: string;
+  filter: Document;
+  update: Document | Document[];
+  options?: Document;
+}

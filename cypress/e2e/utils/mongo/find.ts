@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 import { serialize, deserialize } from 'bson';
-import { QueryOptions } from '../../../../utils/plugins/mongo/models/options';
+import { FindArgs } from '../../../../utils/plugins/mongo/models/options';
 
-export function findOne(args: QueryOptions) {
+export function findOne(args: FindArgs) {
   args.query = serialize(args.query);
 
   return cy.task('findOne', args).then((result: any) => {
@@ -14,7 +14,7 @@ export function findOne(args: QueryOptions) {
   });
 }
 
-export function find(args: QueryOptions) {
+export function find(args: FindArgs) {
   args.query = serialize(args.query);
 
   return cy.task('find', args).then((result: any) => {

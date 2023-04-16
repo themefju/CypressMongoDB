@@ -1,7 +1,7 @@
 import { deserialize, serialize } from 'bson';
-import { QueryOptions } from '../../../../utils/plugins/mongo/models/options';
+import { AggregateArgs } from '../../../../utils/plugins/mongo/models/options';
 
-export function aggregate(args: QueryOptions) {
+export function aggregate(args: AggregateArgs) {
   args.pipeline = serialize(args.pipeline);
 
   return cy.task('aggregate', args).then((result: any) => {
