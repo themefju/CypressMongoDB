@@ -1,10 +1,10 @@
 import { deserialize } from 'bson';
-import { Options } from './models/options';
+import { ConnectOptions, DeleteArgs } from './models/options';
 import { defaults } from '../../utils';
 import { client, defaultOptions } from './connect';
 
-export async function deleteOne(args: any) {
-  const options: Options = defaults(defaultOptions, args);
+export async function deleteOne(args: DeleteArgs) {
+  const options: ConnectOptions & DeleteArgs = defaults(defaultOptions, args);
   options.filter = deserialize(Buffer.from(options.filter as Buffer));
 
   return await client(options.uri)
@@ -26,8 +26,8 @@ export async function deleteOne(args: any) {
     });
 }
 
-export async function deleteMany(args: any) {
-  const options: Options = defaults(defaultOptions, args);
+export async function deleteMany(args: DeleteArgs) {
+  const options: ConnectOptions & DeleteArgs = defaults(defaultOptions, args);
   options.filter = deserialize(Buffer.from(options.filter as Buffer));
 
   return await client(options.uri)

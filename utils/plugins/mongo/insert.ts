@@ -1,11 +1,11 @@
 import { Document } from 'mongodb';
 import { deserialize } from 'bson';
-import { Options, QueryOptions } from './models/options';
+import { ConnectOptions, InsertArgs, InsertManyArgs } from './models/options';
 import { defaults } from '../../utils';
 import { client, defaultOptions } from './connect';
 
-export async function insertOne(args: QueryOptions) {
-  const options: Options = defaults(defaultOptions, args);
+export async function insertOne(args: InsertArgs) {
+  const options: ConnectOptions & InsertArgs = defaults(defaultOptions, args);
   options.document = deserialize(Buffer.from(options.document as Buffer));
 
   return await client(options.uri)
@@ -27,9 +27,14 @@ export async function insertOne(args: QueryOptions) {
     });
 }
 
-export async function insertMany(args: QueryOptions) {
-  const options: Options = defaults(defaultOptions, args);
-  options.documents = deserialize(Buffer.from(options.documents as Buffer));
+export async function insertMany(args: InsertManyArgs) {
+  const options: ConnectOptions & InsertManyArgs = defaults(
+    defaultOptions,
+    args
+  );
+  options.documents = deserialize(
+    Buffer.from(options.documents as Buffer)
+  ) as Document[];
   options.documents = Object.values(options.documents);
 
   return await client(options.uri)
@@ -38,7 +43,7 @@ export async function insertMany(args: QueryOptions) {
       return await client
         .db(options.dbName)
         .collection(options.collection)
-        .insertMany(options.documents)
+        .insertMany(options.documents as Document[])
         .then((result) => {
           return result;
         })

@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 import { serialize } from 'bson';
-import { QueryOptions } from '../../../../utils/plugins/mongo/models/options';
+import { UpdateArgs } from '../../../../utils/plugins/mongo/models/options';
 
-export function updateOne(args: QueryOptions) {
+export function updateOne(args: UpdateArgs) {
   args.filter = serialize(args.filter);
   args.update = serialize(args.update);
 
@@ -11,7 +11,7 @@ export function updateOne(args: QueryOptions) {
   });
 }
 
-export function updateMany(args: QueryOptions) {
+export function updateMany(args: UpdateArgs) {
   args.filter = serialize(args.filter);
   args.update = serialize(args.update);
 
