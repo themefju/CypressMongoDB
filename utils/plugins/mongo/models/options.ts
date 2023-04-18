@@ -5,34 +5,32 @@ export interface ConnectOptions {
   dbName: string;
 }
 
-export interface AggregateArgs {
+export interface BasicArgs {
   collection: string;
+}
+
+export interface AggregateArgs extends BasicArgs {
   pipeline: Document[] | Buffer;
   options?: Document;
 }
 
-export interface DeleteArgs {
-  collection: string;
+export interface DeleteArgs extends BasicArgs {
   filter: Document;
 }
 
-export interface FindArgs {
-  collection: string;
+export interface FindArgs extends BasicArgs {
   query: Document;
 }
 
-export interface InsertArgs {
-  collection: string;
+export interface InsertArgs extends BasicArgs {
   document: Document;
 }
 
-export interface InsertManyArgs {
-  collection: string;
+export interface InsertManyArgs extends BasicArgs {
   documents: Document[] | Buffer;
 }
 
-export interface UpdateArgs {
-  collection: string;
+export interface UpdateArgs extends BasicArgs {
   filter: Document;
   update: Document | Document[];
   options?: Document;
