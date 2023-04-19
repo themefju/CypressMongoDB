@@ -1,4 +1,4 @@
-export function defaults(args: any, ...sources: object[]) {
+export function defaults(args: any, ...sources: any[]) {
   const result = structuredClone(args);
   sources.forEach((source) => {
     if (source) {
