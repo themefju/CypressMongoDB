@@ -1,4 +1,6 @@
 /// <reference types="cypress" />
+import { Collections } from './utils/collections';
+import { deleteAllDataInDB, insertDataInDB } from './utils/mongo';
 import { aggregate } from './utils/mongo/aggregate';
 import { deleteMany, deleteOne } from './utils/mongo/delete';
 import { find, findOne } from './utils/mongo/find';
@@ -10,10 +12,15 @@ it('works', () => {
 });
 
 context('findOne', () => {
+  beforeEach(() => {
+    deleteAllDataInDB();
+    insertDataInDB();
+  });
+
   it('returns null', () => {
     findOne({
       query: { framework: '84302' },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result).to.be.null;
     });
@@ -22,7 +29,7 @@ context('findOne', () => {
   it('works with _id = ObjectId', () => {
     findOne({
       query: { type: 'not nested ObjectId' },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result).to.not.be.null;
       expect(result.test).to.equal('ObjectId');
@@ -32,7 +39,7 @@ context('findOne', () => {
   it('works with _id = UUID', () => {
     findOne({
       query: { type: 'not nested UUID' },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result).to.not.be.null;
       expect(result.test).to.equal('UUID');
@@ -42,39 +49,46 @@ context('findOne', () => {
   it('works with nested _id = ObjectId', () => {
     findOne({
       query: { type: 'nested ObjectId' },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
-      findOne({ query: { _id: result['_id'] }, collection: 'api-tests' }).then(
-        (nestedResult) => {
-          expect(nestedResult).to.not.be.null;
-          expect(nestedResult.test).to.equal('ObjectId');
-          expect(nestedResult.type).to.equal('nested ObjectId');
-        }
-      );
+      findOne({
+        query: { _id: result['_id'] },
+        collection: Collections.ApiTests,
+      }).then((nestedResult) => {
+        expect(nestedResult).to.not.be.null;
+        expect(nestedResult.test).to.equal('ObjectId');
+        expect(nestedResult.type).to.equal('nested ObjectId');
+      });
     });
   });
 
   it('works with nested _id = UUID', () => {
     findOne({
       query: { type: 'nested UUID' },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
-      findOne({ query: { _id: result['_id'] }, collection: 'api-tests' }).then(
-        (nestedResult) => {
-          expect(nestedResult).to.not.be.null;
-          expect(nestedResult.test).to.equal('UUID');
-          expect(nestedResult.type).to.equal('nested UUID');
-        }
-      );
+      findOne({
+        query: { _id: result['_id'] },
+        collection: Collections.ApiTests,
+      }).then((nestedResult) => {
+        expect(nestedResult).to.not.be.null;
+        expect(nestedResult.test).to.equal('UUID');
+        expect(nestedResult.type).to.equal('nested UUID');
+      });
     });
   });
 });
 
 context('find', () => {
+  beforeEach(() => {
+    deleteAllDataInDB();
+    insertDataInDB();
+  });
+
   it('returns empty array', () => {
     find({
       query: { framework: '84302' },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result).to.deep.equal([]);
     });
@@ -83,7 +97,7 @@ context('find', () => {
   it('works with _id = ObjectId', () => {
     find({
       query: { test: 'ObjectId' },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result).to.not.be.null;
       expect(result).to.have.lengthOf(2);
@@ -93,7 +107,7 @@ context('find', () => {
   it('works with _id = UUID', () => {
     find({
       query: { test: 'UUID' },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result).to.not.be.null;
       expect(result).to.have.lengthOf(2);
@@ -105,7 +119,7 @@ context('insert', () => {
   it('inserts one document', () => {
     insertOne({
       document: { inserted: Cypress._.random(0, 100), hurra: false },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
     });
@@ -140,7 +154,7 @@ context('insert', () => {
           manyAtOnce: true,
         },
       ],
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
     });
@@ -152,7 +166,7 @@ context('update', () => {
     updateOne({
       filter: { hurra: false },
       update: { $set: { updatedField: true } },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
       expect(result.matchedCount).to.equal(1);
@@ -164,7 +178,7 @@ context('update', () => {
     updateMany({
       filter: { hurra: true },
       update: { $set: { updateManyFields: true } },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
       expect(result.matchedCount).to.equal(5);
@@ -177,7 +191,7 @@ context('aggregate', () => {
   it('aggregate one document', () => {
     aggregate({
       pipeline: [{ $match: { hurra: false } }, { $set: { aggregated: true } }],
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result).to.not.be.null;
       expect(result).to.have.length(1);
@@ -186,7 +200,7 @@ context('aggregate', () => {
 
       findOne({
         query: { _id: ID },
-        collection: 'api-tests',
+        collection: Collections.ApiTests,
       }).then((result) => {
         expect(result).to.not.be.null;
       });
@@ -198,7 +212,7 @@ context('delete', () => {
   it('deletes one document', () => {
     deleteOne({
       filter: { hurra: false },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
     });
@@ -207,11 +221,11 @@ context('delete', () => {
   it('works with _id = UUID', () => {
     findOne({
       query: { hurra: true, manyAtOnce: true },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       deleteOne({
         filter: { _id: result['_id'] },
-        collection: 'api-tests',
+        collection: Collections.ApiTests,
       }).then((nestedResult) => {
         expect(nestedResult.acknowledged).to.be.true;
       });
@@ -221,7 +235,7 @@ context('delete', () => {
   it('deletes many documents at once', () => {
     deleteMany({
       filter: { hurra: { $in: [true, false] } },
-      collection: 'api-tests',
+      collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
     });
