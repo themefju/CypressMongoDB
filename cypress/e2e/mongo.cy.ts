@@ -235,7 +235,7 @@ context('delete', () => {
 
   it('deletes one document', () => {
     deleteOne({
-      filter: { hurra: false },
+      filter: { inserted: 3 },
       collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
@@ -244,9 +244,27 @@ context('delete', () => {
 
   it('works with _id = UUID', () => {
     findOne({
-      query: { hurra: true, manyAtOnce: true },
+      query: { test: 'UUID' },
       collection: Collections.ApiTests,
     }).then((result) => {
+      if (!result) throw new Error("Result can't be null or undefined");
+
+      deleteOne({
+        filter: { _id: result['_id'] },
+        collection: Collections.ApiTests,
+      }).then((nestedResult) => {
+        expect(nestedResult.acknowledged).to.be.true;
+      });
+    });
+  });
+
+  it('works with _id = ObjectId', () => {
+    findOne({
+      query: { test: 'ObjectId' },
+      collection: Collections.ApiTests,
+    }).then((result) => {
+      if (!result) throw new Error("Result can't be null or undefined");
+
       deleteOne({
         filter: { _id: result['_id'] },
         collection: Collections.ApiTests,
@@ -258,10 +276,17 @@ context('delete', () => {
 
   it('deletes many documents at once', () => {
     deleteMany({
-      filter: { hurra: { $in: [true, false] } },
+      filter: { manyAtOnce: true },
       collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
+
+      find({
+        query: {},
+        collection: Collections.ApiTests,
+      }).then((result) => {
+        expect(result).to.deep.equal([]);
+      });
     });
   });
 });
