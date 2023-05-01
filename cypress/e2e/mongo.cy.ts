@@ -116,9 +116,13 @@ context('find', () => {
 });
 
 context('insert', () => {
+  beforeEach(() => {
+    deleteAllDataInDB();
+  });
+
   it('inserts one document', () => {
     insertOne({
-      document: { inserted: Cypress._.random(0, 100), hurra: false },
+      document: { inserted: 1, hurra: false },
       collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
@@ -129,27 +133,27 @@ context('insert', () => {
     insertMany({
       documents: [
         {
-          inserted: Cypress._.random(100, 1000),
+          inserted: 2,
           hurra: true,
           manyAtOnce: true,
         },
         {
-          inserted: Cypress._.random(100, 1000),
+          inserted: 3,
           hurra: true,
           manyAtOnce: true,
         },
         {
-          inserted: Cypress._.random(100, 1000),
+          inserted: 4,
           hurra: true,
           manyAtOnce: true,
         },
         {
-          inserted: Cypress._.random(100, 1000),
+          inserted: 5,
           hurra: true,
           manyAtOnce: true,
         },
         {
-          inserted: Cypress._.random(100, 1000),
+          inserted: 6,
           hurra: true,
           manyAtOnce: true,
         },
@@ -162,21 +166,27 @@ context('insert', () => {
 });
 
 context('update', () => {
+  beforeEach(() => {
+    deleteAllDataInDB();
+    insertDataInDB();
+  });
+
   it('updates one document', () => {
     updateOne({
-      filter: { hurra: false },
-      update: { $set: { updatedField: true } },
+      filter: { updateOne: true },
+      update: { $set: { updateManyFields: false } },
       collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
       expect(result.matchedCount).to.equal(1);
       expect(result.modifiedCount).to.equal(1);
+      expect(result.upsertedId).to.be.null;
     });
   });
 
   it('updates many documents at once', () => {
     updateMany({
-      filter: { hurra: true },
+      filter: { updateOne: false },
       update: { $set: { updateManyFields: true } },
       collection: Collections.ApiTests,
     }).then((result) => {
@@ -188,30 +198,44 @@ context('update', () => {
 });
 
 context('aggregate', () => {
+  beforeEach(() => {
+    deleteAllDataInDB();
+    insertDataInDB();
+  });
+
   it('aggregate one document', () => {
     aggregate({
-      pipeline: [{ $match: { hurra: false } }, { $set: { aggregated: true } }],
+      pipeline: [
+        { $match: { inserted: { $in: [1, 6] } } },
+        { $set: { aggregated: true } },
+      ],
       collection: Collections.ApiTests,
     }).then((result) => {
-      expect(result).to.not.be.null;
-      expect(result).to.have.length(1);
+      if (!result) throw new Error("Result can't be null or undefined");
 
-      const ID = result[0]['_id'] ?? '';
+      expect(result).to.not.be.null;
+      expect(result).to.have.length(2);
 
       findOne({
-        query: { _id: ID },
+        query: { _id: result[0]['_id'] },
         collection: Collections.ApiTests,
       }).then((result) => {
         expect(result).to.not.be.null;
+        expect(result.inserted).to.equal(1);
       });
     });
   });
 });
 
 context('delete', () => {
+  beforeEach(() => {
+    deleteAllDataInDB();
+    insertDataInDB();
+  });
+
   it('deletes one document', () => {
     deleteOne({
-      filter: { hurra: false },
+      filter: { inserted: 3 },
       collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
@@ -220,9 +244,27 @@ context('delete', () => {
 
   it('works with _id = UUID', () => {
     findOne({
-      query: { hurra: true, manyAtOnce: true },
+      query: { test: 'UUID' },
       collection: Collections.ApiTests,
     }).then((result) => {
+      if (!result) throw new Error("Result can't be null or undefined");
+
+      deleteOne({
+        filter: { _id: result['_id'] },
+        collection: Collections.ApiTests,
+      }).then((nestedResult) => {
+        expect(nestedResult.acknowledged).to.be.true;
+      });
+    });
+  });
+
+  it('works with _id = ObjectId', () => {
+    findOne({
+      query: { test: 'ObjectId' },
+      collection: Collections.ApiTests,
+    }).then((result) => {
+      if (!result) throw new Error("Result can't be null or undefined");
+
       deleteOne({
         filter: { _id: result['_id'] },
         collection: Collections.ApiTests,
@@ -234,10 +276,17 @@ context('delete', () => {
 
   it('deletes many documents at once', () => {
     deleteMany({
-      filter: { hurra: { $in: [true, false] } },
+      filter: { manyAtOnce: true },
       collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
+
+      find({
+        query: {},
+        collection: Collections.ApiTests,
+      }).then((result) => {
+        expect(result).to.deep.equal([]);
+      });
     });
   });
 });
