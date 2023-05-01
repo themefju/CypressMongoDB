@@ -173,19 +173,20 @@ context('update', () => {
 
   it('updates one document', () => {
     updateOne({
-      filter: { hurra: false },
-      update: { $set: { updatedField: true } },
+      filter: { updateOne: true },
+      update: { $set: { updateManyFields: false } },
       collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
       expect(result.matchedCount).to.equal(1);
       expect(result.modifiedCount).to.equal(1);
+      expect(result.upsertedId).to.be.null;
     });
   });
 
   it('updates many documents at once', () => {
     updateMany({
-      filter: { hurra: true },
+      filter: { updateOne: false },
       update: { $set: { updateManyFields: true } },
       collection: Collections.ApiTests,
     }).then((result) => {
