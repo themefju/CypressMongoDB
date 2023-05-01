@@ -116,9 +116,13 @@ context('find', () => {
 });
 
 context('insert', () => {
+  beforeEach(() => {
+    deleteAllDataInDB();
+  });
+
   it('inserts one document', () => {
     insertOne({
-      document: { inserted: Cypress._.random(0, 100), hurra: false },
+      document: { inserted: 1, hurra: false },
       collection: Collections.ApiTests,
     }).then((result) => {
       expect(result.acknowledged).to.be.true;
@@ -129,27 +133,27 @@ context('insert', () => {
     insertMany({
       documents: [
         {
-          inserted: Cypress._.random(100, 1000),
+          inserted: 2,
           hurra: true,
           manyAtOnce: true,
         },
         {
-          inserted: Cypress._.random(100, 1000),
+          inserted: 3,
           hurra: true,
           manyAtOnce: true,
         },
         {
-          inserted: Cypress._.random(100, 1000),
+          inserted: 4,
           hurra: true,
           manyAtOnce: true,
         },
         {
-          inserted: Cypress._.random(100, 1000),
+          inserted: 5,
           hurra: true,
           manyAtOnce: true,
         },
         {
-          inserted: Cypress._.random(100, 1000),
+          inserted: 6,
           hurra: true,
           manyAtOnce: true,
         },
@@ -162,6 +166,11 @@ context('insert', () => {
 });
 
 context('update', () => {
+  beforeEach(() => {
+    deleteAllDataInDB();
+    insertDataInDB();
+  });
+
   it('updates one document', () => {
     updateOne({
       filter: { hurra: false },
@@ -188,6 +197,11 @@ context('update', () => {
 });
 
 context('aggregate', () => {
+  beforeEach(() => {
+    deleteAllDataInDB();
+    insertDataInDB();
+  });
+
   it('aggregate one document', () => {
     aggregate({
       pipeline: [{ $match: { hurra: false } }, { $set: { aggregated: true } }],
@@ -209,6 +223,11 @@ context('aggregate', () => {
 });
 
 context('delete', () => {
+  beforeEach(() => {
+    deleteAllDataInDB();
+    insertDataInDB();
+  });
+
   it('deletes one document', () => {
     deleteOne({
       filter: { hurra: false },
