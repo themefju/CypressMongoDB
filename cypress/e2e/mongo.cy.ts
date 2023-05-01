@@ -80,6 +80,11 @@ context('findOne', () => {
 });
 
 context('find', () => {
+  beforeEach(() => {
+    deleteAllDataInDB();
+    insertDataInDB();
+  });
+
   it('returns empty array', () => {
     find({
       query: { framework: '84302' },
