@@ -205,19 +205,23 @@ context('aggregate', () => {
 
   it('aggregate one document', () => {
     aggregate({
-      pipeline: [{ $match: { hurra: false } }, { $set: { aggregated: true } }],
+      pipeline: [
+        { $match: { inserted: { $in: [1, 6] } } },
+        { $set: { aggregated: true } },
+      ],
       collection: Collections.ApiTests,
     }).then((result) => {
-      expect(result).to.not.be.null;
-      expect(result).to.have.length(1);
+      if (!result) throw new Error("Result can't be null or undefined");
 
-      const ID = result[0]['_id'] ?? '';
+      expect(result).to.not.be.null;
+      expect(result).to.have.length(2);
 
       findOne({
-        query: { _id: ID },
+        query: { _id: result[0]['_id'] },
         collection: Collections.ApiTests,
       }).then((result) => {
         expect(result).to.not.be.null;
+        expect(result.inserted).to.equal(1);
       });
     });
   });
